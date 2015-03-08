@@ -1,0 +1,50 @@
+section.panel.panel-default
+  .panel-heading
+    h2.panel-title 
+      span.glyphicon.glyphicon-leaf
+      | Source
+  .panel-body
+    .form-group
+      label DB Pool
+      input.form-control(ng-focus='srcPoolOnFocus()' ng-blur='srcPoolOnBlur()' ng-keyup='srcPoolOnKeyUp()' ng-model='srcPool')
+      ul.dropdown-menu
+        li: a(href='#') 1
+        li: a(href='#') 2
+        li: a(href='#') 3
+    .form-group
+      label Company Instance
+      .btn-group.btn-group-justified
+        a.btn.active(href='#')
+          span.glyphicon
+          | Single
+        a.btn(href='#')
+          span.glyphicon
+          | File
+      input.form-control
+      input.form-control(type='file')
+section.panel.panel-default
+  .panel-heading
+    h2.panel-title 
+      span.glyphicon.glyphicon-leaf
+      | Target
+  .panel-body
+    .form-group
+      label DB Pool
+      input.form-control
+    .form-group
+      label Company Instance
+      input.form-control
+section.panel.panel-default
+  .panel-heading
+    h2.panel-title 
+      span.glyphicon.glyphicon-cog
+      | Settings
+  .panel-body
+    .form-group
+      label
+        span.glyphicon.glyphicon-check
+        | Heterogeneous
+section.text-center
+  a.btn.btn-submit
+    span.glyphicon.glyphicon-eye-open
+    | Preview
