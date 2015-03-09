@@ -18,4 +18,8 @@ router.get('/queue', function(req, res) {
     res.render('queue');
 });
 
+router.get('/template/pool', function(req, res) {
+    res.render('pool');
+});
+
 module.exports = router;

@@ -132,9 +132,21 @@ input[type='file']:focus {
 
 .dropdown-menu {
     display: none;
+    opacity: 0;
+    position: absolute; 
+    top: 100%;
+    left: 0;
+    margin-top: 0;
     background: #333c4e;
     border: none;
     padding: 0;
+    transition: all .2s ease-in;
+}
+
+.dropdown-menu.active {
+    display: block;
+    opacity: 1;
+    margin-top: 15px;
 }
 
 .dropdown-menu:before {
@@ -164,7 +176,8 @@ input[type='file']:focus {
     border-radius: 0 0 4px 4px;
 }
 
-.dropdown-menu > li > a:hover {
+.dropdown-menu > li > a:hover,
+.dropdown-menu > li > a:focus {
     background: #283041;
     color: #f4f4f4;
 }

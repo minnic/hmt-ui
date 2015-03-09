@@ -4,33 +4,25 @@ section.panel.panel-default
       span.glyphicon.glyphicon-leaf
       | Source
   .panel-body
-    .form-group
-      label DB Pool
-      input.form-control(ng-focus='srcPoolOnFocus()' ng-blur='srcPoolOnBlur()' ng-keyup='srcPoolOnKeyUp()' ng-model='srcPool')
-      ul.dropdown-menu
-        li: a(href='#') 1
-        li: a(href='#') 2
-        li: a(href='#') 3
+    .form-group(hmt-pool='source')
     .form-group
       label Company Instance
       .btn-group.btn-group-justified
-        a.btn.active(href='#')
+        a.btn(ng-class='{active: !isUsingFile}' ng-click='setUsingFile(false)')
           span.glyphicon
           | Single
-        a.btn(href='#')
+        a.btn(ng-class='{active: isUsingFile}' ng-click='setUsingFile(true)')
           span.glyphicon
           | File
-      input.form-control
-      input.form-control(type='file')
+      input.form-control(ng-class='{hide: isUsingFile}')
+      input.form-control(ng-class='{hide: !isUsingFile}' type='file')
 section.panel.panel-default
   .panel-heading
     h2.panel-title 
       span.glyphicon.glyphicon-leaf
       | Target
   .panel-body
-    .form-group
-      label DB Pool
-      input.form-control
+    .form-group(hmt-pool='target')
     .form-group
       label Company Instance
       input.form-control
@@ -42,7 +34,7 @@ section.panel.panel-default
   .panel-body
     .form-group
       label
-        span.glyphicon.glyphicon-check
+        span.glyphicon.glyphicon-check(hmt-hetero)
         | Heterogeneous
 section.text-center
   a.btn.btn-submit
