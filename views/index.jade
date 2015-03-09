@@ -4,7 +4,7 @@ block stylesheet
   link(rel='stylesheet' href='/bower_components/bootstrap/dist/css/bootstrap-theme.css')
   link(rel='stylesheet' href='/stylesheets/style.css')
 block body
-  body(ng-app='hmt')
+  body(ng-app='hmt' ng-controller='MainController')
     header.navbar.navbar-default.navbar-fixed-top: .container
       .navbar-header
         h1: a.navbar-brand(href='/')= title
@@ -14,15 +14,10 @@ block body
       aside
         .avatar: span.glyphicon.glyphicon-retweet
         ul.nav.nav-stacked
-          li.active: a(href='#/home')
-            span.glyphicon.glyphicon-home
-            | Home
-          li: a(href='#/history')
-            span.glyphicon.glyphicon-time
-            | History
-          li: a(href='#/queue') 
-            span.glyphicon.glyphicon-list-alt
-            | Queue
+          li(ng-repeat='tab in tabs' ng-class='{active: isCurrentTab(tab.href)}')
+            a(href='{{ tab.href }}')
+              span(ng-class='tab.iconClass')
+              | {{ tab.label }}
       section.content
         .header
         .main(ng-view)
