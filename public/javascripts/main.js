@@ -73,12 +73,34 @@ hmt.controller('HomeController', [
         $scope.isUsingFile = isUsingFile;
     };
 
-    $scope.preview = function() {
-        $scope.$emit('preview');
+    var check = function(callback) {
+        // TODO: single or file(use ajax to get from backend)
+        $scope.companies = ['a', 'b'];
+        $scope.company = {
+            from: 'sfuser_a',
+            to: 'sfuser_b'
+        };
+
+        // TODO: validate form data
+        $scope.message = {};
+
+        // check source
+        if (!$scope.source) {
+            $scope.message.srcPool = '#source';
+            $scope.$emit('close');
+        }
+
+        // window.setTimeout(callback, 500); 
     };
 
-    // TODO: single or file(use ajax to get from backend)
-    $scope.companies = ['a', 'b'];
+    $scope.preview = function() {
+        
+        $scope.$emit('loading');
+
+        check(function() {
+            $scope.$emit('preview');
+        });
+    };
 
 }]);
 
@@ -175,7 +197,6 @@ hmt.directive('hetero', function() {
                 } else {
                     element.addClass('active');
                 }
-                // console.log('click');
             });
         }
     };
@@ -186,13 +207,22 @@ hmt.directive('hmtPreviewDialog', function() {
         restrict: 'AE',
         link: function(scope, element) {
             var show = function() {
+                element.removeClass('loading');
                 element.addClass('active');
             };
 
+            var loading = function() {
+                element.removeClass('active');
+                element.addClass('loading');
+            };
+
             var close = function() {
+                element.removeClass('loading');
                 element.removeClass('active');
             };
 
+            scope.$on('close', close);
+            scope.$on('loading', loading);
             scope.$on('preview', show);
             scope.close = close;
         }
