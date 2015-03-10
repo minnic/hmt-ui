@@ -25,7 +25,9 @@ section.panel.panel-default
     .form-group(hmt-pool='target')
     .form-group
       label Company Instance
-      input.form-control
+      .input-group
+        input.form-control
+        .input-group-btn: button.btn.btn-primary G
 section.panel.panel-default
   .panel-heading
     h2.panel-title 
@@ -34,9 +36,33 @@ section.panel.panel-default
   .panel-body
     .form-group
       label
-        span.glyphicon.glyphicon-check(hmt-hetero)
+        input(type='checkbox' class='hetero')
+        span.glyphicon
         | Heterogeneous
 section.text-center
-  a.btn.btn-submit
+  a.btn.btn-submit(ng-click='preview()' href='#' onclick='return false;')
     span.glyphicon.glyphicon-eye-open
     | Preview
+.overlay-wrapper.active(hmt-preview-dialog)
+  .overlay-bg
+  .overlay-body
+    .panel.panel-default
+      .panel-heading
+        h2.panel-title Summary
+      .panel-body
+        ul.timeline
+          li.item
+            h3.item-title Source
+            h4.item-sub-title {{ source.jndi }}
+            h5.item-desc {{ source.ip + ':' + source.port }}
+          li.item
+            h3.item-title Target
+            h4.item-sub-title {{ target.jndi }}
+            h5.item-desc {{ target.ip + ':' + target.port }}
+          li.item
+            h3.item-title Company Instance
+            ul.label-list
+              li(ng-repeat='label in companies') {{ label }}
+      .panel-footer.text-right
+        button.btn.btn-submit Confirm
+        button.btn.btn-link(ng-click='close()') Cancel

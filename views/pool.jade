@@ -1,5 +1,8 @@
 label DB Pool
 input.form-control(ng-model='poolName')
 ul.dropdown-menu(ng-class='{active: isActive}')
-  li(ng-repeat='name in names')
-    a(href='#' onclick='return false;' ng-click='setPoolName($index)') {{ name }}
+  li(ng-repeat='pool in pools')
+    a(href='#' onclick='return false;' ng-click='setPoolName($index)') 
+      | {{ pool.jndi }}
+      br
+      | {{ '(' + pool.ip + ':' + pool.port + ')' }}

@@ -61,8 +61,10 @@ hmt.controller('MainController', ['$scope', 'TabFactory', function($scope, tabFa
 
 }]);
 
-hmt.controller('HomeController', ['$scope', 'TabFactory', function($scope, tabFactory) {
-
+hmt.controller('HomeController', [
+        '$scope', 'TabFactory', 
+        function($scope, tabFactory) {
+    
     tabFactory.setCurrentTab('#/home');
 
     $scope.isUsingFile = false;
@@ -71,9 +73,40 @@ hmt.controller('HomeController', ['$scope', 'TabFactory', function($scope, tabFa
         $scope.isUsingFile = isUsingFile;
     };
 
+    $scope.preview = function() {
+        $scope.$emit('preview');
+    };
+
+    // TODO: single or file(use ajax to get from backend)
+    $scope.companies = ['a', 'b'];
+
 }]);
 
-hmt.directive('hmtPool', function() {
+hmt.factory('PoolFactory', function() {
+    var factory = {};
+
+    factory.source = [{
+        jndi: 'SH_QA_Local',
+        ip: '10.129.126.194',
+        port: 1521,
+        sid: 'dbpool1'
+    }, {
+        jndi: 'SH_QA_BigData_Local',
+        ip: '10.129.126.152',
+        port: 1521,
+        sid: 'dbpool1'
+    }];
+
+    factory.target = [{
+        jndi: 'SH1_SFUSER',
+        ip: '10.129.126.150',
+        port: 30015
+    }];
+
+    return factory;
+});
+
+hmt.directive('hmtPool', ['PoolFactory', function(poolFactory) {
     function checkParent(el, parent) {
         if (!el || el == document.body) {
             return false;
@@ -101,7 +134,6 @@ hmt.directive('hmtPool', function() {
                             scope.isActive = false;
                         });
                     }
-                    console.log(event.target);
                 }
             };
 
@@ -115,27 +147,54 @@ hmt.directive('hmtPool', function() {
             doc.on('keyup', deactivate);
         },
         controller: function($scope, $element, $attrs) {
+            var isSource = $attrs['hmtPool'] == 'source';
+
             if ($attrs['hmtPool'] == 'source') {
-                $scope.names = ['1', '2', '3'];
+                $scope.pools = poolFactory.source;
             } else {
-                $scope.names = ['4', '5', '6'];
+                $scope.pools = poolFactory.target;
             }
 
             $scope.setPoolName = function(index) {
-                $scope.poolName = $scope.names[index];
-                console.log($scope.poolName);
+                $scope.poolName = $scope.pools[index].jndi;
                 $scope.isActive = false;
+
+                $scope.$parent[isSource ? 'source' : 'target'] = $scope.pools[index];
             };
+        }
+    };
+}]);
+
+hmt.directive('hetero', function() {
+    return {
+        restrict: 'C',
+        link: function(scope, element) {
+            element.on('click', function() {
+                if (element.hasClass('active')) {
+                    element.removeClass('active');
+                } else {
+                    element.addClass('active');
+                }
+                // console.log('click');
+            });
         }
     };
 });
 
-hmt.directive('hmtHetero', function() {
+hmt.directive('hmtPreviewDialog', function() {
     return {
-        restrict: 'A',
+        restrict: 'AE',
         link: function(scope, element) {
-            element.on('click', function() {
-            });
+            var show = function() {
+                element.addClass('active');
+            };
+
+            var close = function() {
+                element.removeClass('active');
+            };
+
+            scope.$on('preview', show);
+            scope.close = close;
         }
     };
 });
