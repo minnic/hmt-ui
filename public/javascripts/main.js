@@ -65,46 +65,95 @@ hmt.controller('HomeController', [
         '$scope', 'TabFactory', 
         function($scope, tabFactory) {
     
-    tabFactory.setCurrentTab('#/home');
+    var init = function() {
 
-    $scope.isUsingFile = false;
+        tabFactory.setCurrentTab('#/home');
 
-    $scope.setUsingFile = function(isUsingFile) {
-        $scope.isUsingFile = isUsingFile;
-    };
+        $scope.isUsingFile = false;
 
-    var check = function(callback) {
-        // TODO: single or file(use ajax to get from backend)
-        $scope.companies = ['a', 'b'];
-        $scope.company = {
-            from: 'sfuser_a',
-            to: 'sfuser_b'
-        };
-
-        // TODO: validate form data
+        $scope.company = {};
+        $scope.companies = [];
         $scope.message = {};
 
-        // check source
-        if (!$scope.source) {
-            $scope.message.srcPool = '#source';
-            $scope.$emit('close');
-        }
-
-        // window.setTimeout(callback, 500); 
+        $scope.setUsingFile = setUsingFile;
+        $scope.preview = preview;
     };
 
-    $scope.preview = function() {
-        
-        $scope.$emit('loading');
+
+    var setUsingFile = function(isUsingFile) {
+        $scope.isUsingFile = isUsingFile;
+        // TODO: disable target company
+    };
+
+    var preview = function() {
 
         check(function() {
             $scope.$emit('preview');
         });
     };
 
+    var check = function(callback) {
+
+        var ok = true,
+            waiting = false;
+
+        if (!$scope.source) {
+            ok = false;
+            $scope.$broadcast('source.error', {
+                message: '#source'
+            });
+        }
+        
+        if ($scope.isUsingFile) {
+                waiting = true;
+                console.log($scope.company.fileName);
+                // TODO: ajax
+                window.setTimeout(function() {
+                    
+                    $scope.companies = ['a', 'b'];
+
+                    if (ok) {
+                        callback();
+                    }
+                }, 300);
+        } else {
+            if (!$scope.company.from) {
+                ok = false;
+                $scope.message.sourceInstance = '#Invalid company name';
+            }
+            if (!$scope.company.to) {
+                ok = false;
+                $scope.message.targetInstance = '#Invalid company name';
+            } else if ($scope.target) {
+                var isPrefixValid = $scope.target.prefix.some(function(v) {
+                    return $scope.company.to.indexOf(v) == 0;
+                });
+                if (!isPrefixValid) {
+                    ok = false;
+                    $scope.message.targetInstance = '#Invalid company name';
+                }
+            }
+        }
+        
+        if (!$scope.target) {
+            ok = false;
+            $scope.$broadcast('target.error', {
+                message: '#target'
+            });
+        }
+
+        if (ok && !waiting) {
+            callback();
+        }
+    };
+
+    init();
+
 }]);
 
 hmt.factory('PoolFactory', function() {
+
+    // TODO: it should be read from backend
     var factory = {};
 
     factory.source = [{
@@ -112,22 +161,24 @@ hmt.factory('PoolFactory', function() {
         ip: '10.129.126.194',
         port: 1521,
         sid: 'dbpool1'
-    }, {
-        jndi: 'SH_QA_BigData_Local',
+    }, { 
+        jndi: 'SH_QA_BigData_Local', 
         ip: '10.129.126.152',
         port: 1521,
-        sid: 'dbpool1'
+        sid: 'dbpool1' 
     }];
 
     factory.target = [{
         jndi: 'SH1_SFUSER',
         ip: '10.129.126.150',
-        port: 30015
+        port: 30015,
+        prefix: ['AUTOMATION', 'SFUSER'] 
     }];
 
     return factory;
 });
 
+// source/target db pool
 hmt.directive('hmtPool', ['PoolFactory', function(poolFactory) {
     function checkParent(el, parent) {
         if (!el || el == document.body) {
@@ -154,6 +205,8 @@ hmt.directive('hmtPool', ['PoolFactory', function(poolFactory) {
                     if (target != childNodes[1] && !checkParent(target, childNodes[2])) {
                         scope.$apply(function() {
                             scope.isActive = false;
+
+                            // TODO: autocomplete scope.jndi
                         });
                     }
                 }
@@ -169,24 +222,72 @@ hmt.directive('hmtPool', ['PoolFactory', function(poolFactory) {
             doc.on('keyup', deactivate);
         },
         controller: function($scope, $element, $attrs) {
+            $scope.message = '';
+
             var isSource = $attrs['hmtPool'] == 'source';
+
+            var errorHandler = function(evt, err) {
+                $scope.message = err.message;
+            };
 
             if ($attrs['hmtPool'] == 'source') {
                 $scope.pools = poolFactory.source;
+                $scope.$on('source.error', errorHandler);
             } else {
                 $scope.pools = poolFactory.target;
+                $scope.$on('target.error', errorHandler);
             }
 
             $scope.setPoolName = function(index) {
-                $scope.poolName = $scope.pools[index].jndi;
+                $scope.jndi = $scope.pools[index].jndi;
                 $scope.isActive = false;
 
                 $scope.$parent[isSource ? 'source' : 'target'] = $scope.pools[index];
+
+                // console.log($scope.pools[index]);
             };
         }
     };
 }]);
 
+// source company when using file
+hmt.directive('hmtFile', function() {
+});
+
+// target company
+hmt.directive('hmtTargetCompany', function() {
+    return {
+        restrict: 'A',
+        link: function(scope, element) {
+            var childNodes = element.children()[1].childNodes,
+                button = angular.element(childNodes[0]),
+                list = angular.element(childNodes[1]);
+
+            button.on('click', function() {
+                list.toggleClass('active');
+            });
+
+            scope.changePrefix = function(prefix) {
+                if (!scope.isUsingFile) {
+                    if (!scope.company) {
+                        scope.company = {};
+                    }
+                    if (!scope.company.to) {
+                        scope.company.to = '';
+                    }
+                    scope.company.to = prefix + '_' +
+                        scope.company.to.substring(1 + scope.company.to.lastIndexOf('_'));
+                }
+
+                list.removeClass('active');
+            };
+
+            // TODO: disable input if using file
+        }
+    };
+});
+
+// heterogeneous checkbox
 hmt.directive('hetero', function() {
     return {
         restrict: 'C',
@@ -202,6 +303,7 @@ hmt.directive('hetero', function() {
     };
 });
 
+// preview dialog
 hmt.directive('hmtPreviewDialog', function() {
     return {
         restrict: 'AE',

@@ -6,7 +6,7 @@ section.panel.panel-default
   .panel-body
     .form-group(hmt-pool='source')
     .form-group
-      label Company Instance
+      label Company Instance {{ message.sourceInstance }}
       .btn-group.btn-group-justified
         a.btn(ng-class='{active: !isUsingFile}' ng-click='setUsingFile(false)')
           span.glyphicon
@@ -14,8 +14,8 @@ section.panel.panel-default
         a.btn(ng-class='{active: isUsingFile}' ng-click='setUsingFile(true)')
           span.glyphicon
           | File
-      input.form-control(ng-class='{hide: isUsingFile}')
-      input.form-control(ng-class='{hide: !isUsingFile}' type='file')
+      input.form-control(ng-class='{hide: isUsingFile}' ng-model='company.from')
+      input.form-control(ng-class='{hide: !isUsingFile}' type='file' ng-model='company.fileName')
 section.panel.panel-default
   .panel-heading
     h2.panel-title 
@@ -24,10 +24,14 @@ section.panel.panel-default
   .panel-body
     .form-group(hmt-pool='target')
     .form-group
-      label Company Instance
-      .input-group
-        input.form-control
-        .input-group-btn: button.btn.btn-primary G
+      label Company Instance {{ message.targetInstance }}
+      .input-group(hmt-target-company)
+        input.form-control(ng-model='company.to')
+        .input-group-btn
+          button.btn.btn-primary G
+          ul.dropdown-menu
+            li(ng-repeat='prefix in target.prefix')
+              a(ng-click='changePrefix(prefix)' href='#' onclick='return false;') {{ prefix }}
 section.panel.panel-default
   .panel-heading
     h2.panel-title 
@@ -43,7 +47,7 @@ section.text-center
   a.btn.btn-submit(ng-click='preview()' href='#' onclick='return false;')
     span.glyphicon.glyphicon-eye-open
     | Preview
-.overlay-wrapper.active(hmt-preview-dialog)
+.overlay-wrapper(hmt-preview-dialog)
   .overlay-bg
   .overlay-loading
   .overlay-content
@@ -63,7 +67,11 @@ section.text-center
           li.item
             h3.item-title Company Instance
             ul.label-list
-              li(ng-repeat='label in companies') {{ label }}
+              li(ng-if='isUsingFile' ng-repeat='label in companies') {{ label }}
+              li(ng-if='!isUsingFile')
+                | {{ company.from }}
+                span.glyphicon.glyphicon-arrow-right
+                | {{ company.to }}
       .panel-footer.text-right
         button.btn.btn-submit Confirm
         button.btn.btn-link(ng-click='close()') Cancel

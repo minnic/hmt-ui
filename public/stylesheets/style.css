@@ -178,7 +178,7 @@ input[type='file']:focus {
 .dropdown-menu.active {
     display: block;
     opacity: 1;
-    margin-top: 15px;
+    margin-top: 16px;
 }
 
 .dropdown-menu:before {
@@ -186,10 +186,10 @@ input[type='file']:focus {
     position: absolute;
     width: 0;
     height: 0;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-bottom: 10px solid #333c4e;
-    top: -10px;
+    border-left: 11px solid transparent;
+    border-right: 11px solid transparent;
+    border-bottom: 11px solid #333c4e;
+    top: -11px;
     left: 25px;
 }
 
@@ -215,6 +215,17 @@ input[type='file']:focus {
 .dropdown-menu > li > a:focus {
     background: #283041;
     color: #f4f4f4;
+}
+
+.input-group .dropdown-menu {
+    left: auto;
+    right: 0;
+    min-width: auto;
+}
+
+.input-group .dropdown-menu:before {
+    left: auto;
+    right: 3px;
 }
 
 .btn-group-justified {
@@ -256,6 +267,14 @@ input[type='file']:focus {
 
 .btn-group-justified .btn.active span:before {
     content: '\e067';
+}
+
+.btn-primary {
+    border-radius: 0;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
 }
 
 .hetero {
@@ -396,10 +415,12 @@ input[type='file']:focus {
 
 .item-sub-title {
     font-size: 16px;
+    margin-top: 0;
 }
 
 .item-desc {
     font-size: 14px;
+    margin-bottom: 0;
 }
 
 .label-list {
@@ -416,6 +437,11 @@ input[type='file']:focus {
     background: #333c4e;
     margin-right: 8px;
     color: #f4f4f4;
+}
+
+.label-list li .glyphicon {
+    padding: 0 8px;
+    color: #15a4fa;
 }
 
 .btn-link {
