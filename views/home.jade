@@ -14,8 +14,12 @@ section.panel.panel-default
         a.btn(ng-class='{active: isUsingFile}' ng-click='setUsingFile(true)')
           span.glyphicon
           | File
-      input.form-control(ng-class='{hide: isUsingFile}' ng-model='company.from')
-      input.form-control(ng-class='{hide: !isUsingFile}' type='file' ng-model='company.fileName')
+      div(ng-class='{hide: isUsingFile}')
+        input.form-control(ng-model='company.from')
+      form(ng-class='{hide: !isUsingFile}' hmt-file method='post' enctype='multipart/form-data' action='/file')
+        input.form-control(name='sourceCompanies' type='file')
+        input(type='hidden' name='sourcePool' ng-model='source.jndi')
+        a.btn.btn-primary(ng-click='validateFile()') Submit
 section.panel.panel-default
   .panel-heading
     h2.panel-title 

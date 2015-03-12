@@ -105,17 +105,21 @@ hmt.controller('HomeController', [
         }
         
         if ($scope.isUsingFile) {
-                waiting = true;
-                console.log($scope.company.fileName);
-                // TODO: ajax
-                window.setTimeout(function() {
-                    
-                    $scope.companies = ['a', 'b'];
+            waiting = true;
+            $scope.$emit('loading');
+            $scope.$emit('submit', function(companies) {
+                $scope.$emit('close');
 
-                    if (ok) {
-                        callback();
-                    }
-                }, 300);
+                // console.log(companies);
+                $scope.$apply(function() {
+                    $scope.companies = JSON.parse(companies);
+                });
+                // console.log($scope.companies);
+
+                if (ok) {
+                    callback();
+                }
+            });
         } else {
             if (!$scope.company.from) {
                 ok = false;
@@ -252,6 +256,40 @@ hmt.directive('hmtPool', ['PoolFactory', function(poolFactory) {
 
 // source company when using file
 hmt.directive('hmtFile', function() {
+    return {
+        restrict: 'A',
+        link: function(scope, element) {
+
+            var form = element[0]; 
+            
+            var submit = function(evt, callback) {
+
+                var iframe = document.createElement('iframe');
+                iframe.name = 'iframe-file';
+                iframe.style.display = 'none';
+
+                form.target = 'iframe-file';
+                form.appendChild(iframe);
+                
+                iframe.onload = function() {
+                    var responseText = window.frames['iframe-file'].document.body.innerHTML;
+                    // console.log('load: #', responseText);
+                    callback(responseText);
+                    form.removeChild(iframe);
+                };
+
+                form.submit();
+            };
+
+            scope.$on('submit', submit);
+
+            scope.validateFile = function() {
+                submit(null, function(responseText) {
+                    console.log(responseText);
+                });
+            };
+        }
+    };
 });
 
 // target company
