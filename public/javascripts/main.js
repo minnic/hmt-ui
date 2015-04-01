@@ -74,9 +74,11 @@ hmt.controller('HomeController', [
         $scope.company = {};
         $scope.companies = [];
         $scope.message = {};
+        $scope.isHeterogenerous = false;
 
         $scope.setUsingFile = setUsingFile;
         $scope.preview = preview;
+        $scope.migrate = migrate;
     };
 
 
@@ -149,6 +151,15 @@ hmt.controller('HomeController', [
         if (ok && !waiting) {
             callback();
         }
+    };
+
+    var migrate = function() {
+        console.log($scope.source);
+        console.log($scope.isUsingFile);
+        console.log($scope.target);
+        console.log($scope.company);
+        console.log($scope.isHeterogenerous);
+        // TODO: disable confirm button
     };
 
     init();
@@ -332,8 +343,10 @@ hmt.directive('hetero', function() {
         link: function(scope, element) {
             element.on('click', function() {
                 if (element.hasClass('active')) {
+                    scope.isHeterogenerous = false;
                     element.removeClass('active');
                 } else {
+                    scope.isHeterogenerous = true;
                     element.addClass('active');
                 }
             });
