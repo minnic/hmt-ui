@@ -1,6 +1,7 @@
 var express = require('express')
     multer = require('multer'),
-    bodyParser = require('body-parser');
+    bodyParser = require('body-parser'),
+    data = require('./db.json');
 
 var router = express.Router();
 
@@ -14,7 +15,7 @@ router.get('/home', function(req, res) {
 });
 
 router.get('/data/home', function(req, res) {
-    // TODO: 
+    res.send(data.home);
 });
 
 router.get('/history', function(req, res) {

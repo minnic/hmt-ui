@@ -8,3 +8,6 @@ table.table.table-striped.table-bordered
     th Target Schema
     th Action
   tbody
+    tr(ng-repeat='item in list')
+      td {{ $index }}
+      td {{ item.startDate }}
